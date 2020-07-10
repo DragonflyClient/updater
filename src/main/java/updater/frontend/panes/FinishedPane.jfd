@@ -1,0 +1,59 @@
+JFDML JFormDesigner: "7.0.2.4.305" Java: "11.0.7" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+			"$columnSpecs": "449"
+			"$rowSpecs": "40, 31, 25, 19, 30, 59"
+			"$alignLeft": true
+			"$alignTop": true
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "titleLabel"
+				"text": "Dragonfly Updater"
+				"font": new java.awt.Font( "SF Pro Display", 0, 22 )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"hAlign": 0
+				"vAlign": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "subtitleLabel"
+				"text": "Dragonfly v1.0.0.0 has been successfully downloaded"
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 1
+				"vAlign": 1
+				"hAlign": 0
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "textLabel1"
+				"text": "You may now continue playing!"
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 2
+				"vAlign": 3
+				"hAlign": 0
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "textLabel2"
+				"text": "Thanks for your patience and have fun with the new features!"
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 3
+				"hAlign": 0
+				"vAlign": 1
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "finishButton"
+				"text": "Finish"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "finishButtonActionPerformed", true ) )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 5
+				"hAlign": 0
+				"vAlign": 0
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 5, 0 )
+			"size": new java.awt.Dimension( 450, 205 )
+		} )
+	}
+}

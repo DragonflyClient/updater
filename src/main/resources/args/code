@@ -1,0 +1,28 @@
+val jvmArgs = args.filter { it.startsWith("%") }.joinToString(" ") { it.removePrefix("%") }
+val programArgs = args.filter { it.startsWith("&") }.joinToString(" ") { it.removePrefix("&") }
+val classpath = JsonParser().parse(
+    File("${minecraftHome}versions\\Dragonfly-1.8.8\\Dragonfly-1.8.8.json").reader()
+).asJsonObject.get("libraries").asJsonArray.joinToString(";") {
+    val dependency = it.asJsonObject.get("name").asString.split(":")
+    println("Retrieved dependency: $dependency")
+    val pack = dependency[0].replace(".", "\\")
+    val name = dependency[1]
+    val version = dependency[2]
+    "${minecraftHome}libraries\\$pack\\$name\\$version\\$name-$version.jar"
+}
+
+val clientFile = File("${minecraftHome}versions\\Dragonfly-1.8.8\\Dragonfly-1.8.8.jar")
+println("jvmArgs = $jvmArgs")
+println("programArgs = $programArgs")
+println("clientFile = $clientFile")
+println("classpath = $classpath")
+
+if (jvmArgs.isNotEmpty() && programArgs.isNotEmpty() && clientFile.exists()) {
+    println("Resuming client...")
+    val cmd = "java -cp $classpath $jvmArgs -jar \"${clientFile.path}\" $programArgs"
+    val process = Runtime.getRuntime().exec(cmd)
+    println(process.waitFor())
+    println(cmd)
+} else {
+    println("Cannot resume client!")
+}
