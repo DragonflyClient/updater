@@ -5,10 +5,10 @@ import kotlinx.coroutines.*
 import updater.backend.installer.InstallerLauncher
 import updater.backend.process.ProcessManager
 import updater.backend.process.reactivateRestorePoint
+import updater.backend.utils.isInternetAvailable
 import updater.frontend.DragonflyPalette
 import updater.frontend.MainFrame
-import java.awt.Font
-import java.awt.GraphicsEnvironment
+import java.awt.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -67,6 +67,7 @@ object DragonflyUpdater {
     fun main(args: Array<String>) {
         log("Starting Dragonfly Updater")
         Runtime.getRuntime().addShutdownHook(thread(name = "Shutdown Hook", start = false) {
+            log("Updater is shutting down...")
             cancelAndRestore()
         })
 
@@ -78,8 +79,19 @@ object DragonflyUpdater {
 
         customizeTheme()
 
-        if (isRequiringInstaller) {
+        if (!isInternetAvailable()) {
+            log("No internet connection available!")
+            JOptionPane.showMessageDialog(
+                null,
+                "We could not connect to the Inception Cloud Content Delivery Network. Please make sure your device" +
+                        "is connected to the internet and try again.",
+                "No internet connection",
+                JOptionPane.ERROR_MESSAGE)
+            ProcessManager.errorOccurred = true
+            exitProcess(0)
+        } else if (isRequiringInstaller) {
             InstallerLauncher.askUser()
+            log("Exit: User was asked for installer")
             exitProcess(0)
         } else {
             frame = MainFrame(targetVersion)
@@ -125,14 +137,17 @@ object DragonflyUpdater {
      */
     @JvmStatic
     fun resumeClient() {
-        if (isHeadless)
+        if (isHeadless) {
+            log("Exit: Don't resume when headless")
             exitProcess(0)
+        }
 
         val launcher = File("C:\\Program Files (x86)\\Minecraft Launcher\\MinecraftLauncher.exe")
         if (launcher.exists()) {
             Runtime.getRuntime().exec(launcher.absolutePath)
         }
 
+        log("Exit: Client resumed")
         exitProcess(0)
     }
 
@@ -165,17 +180,20 @@ object DragonflyUpdater {
         thread {
             log("Updater cancelled, shutting down safely")
 
-            runBlocking {
-                if (isHeadless) delay(5_000)
+            if (!ProcessManager.errorOccurred) {
+                runBlocking {
+                    if (isHeadless) delay(5_000)
 
-                log("Waiting for processes to be cancelled")
-                ProcessManager.processesJob.cancelAndJoin()
-                log("All processes cancelled, reactivating restore point")
-                reactivateRestorePoint.run()
-                log("Restore point reactivated!")
+                    log("Waiting for processes to be cancelled")
+                    ProcessManager.processesJob.cancelAndJoin()
+                    log("All processes cancelled, reactivating restore point")
+                    reactivateRestorePoint.run()
+                    log("Restore point reactivated!")
+                }
             }
 
-            frame.isVisible = false
+            if (this::frame.isInitialized)
+                frame.isVisible = false
 
             log("Bye bye!")
             exitProcess(0)

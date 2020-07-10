@@ -26,6 +26,11 @@ object ProcessManager {
     lateinit var processesJob: Job
 
     /**
+     * Whether an error occurred during the execution of one process.
+     */
+    var errorOccurred = false
+
+    /**
      * Execute the process while catching and handling all occurring exceptions.
      */
     private suspend fun Process.execute() {
@@ -39,6 +44,7 @@ object ProcessManager {
                 return
             }
 
+            errorOccurred = true
             log("Process failed")
             exception.printStackTrace()
 
@@ -57,6 +63,7 @@ object ProcessManager {
                 )
             }
 
+            log("Exception during process execution!")
             DragonflyUpdater.cancelAndRestore()
             throw exception
         }
@@ -92,6 +99,7 @@ object ProcessManager {
                 )
 
                 delay(10_000)
+                log("Exit: Headless update finished")
                 exitProcess(0)
             } else {
                 frame.contentPane.removeAll()

@@ -1,11 +1,11 @@
 package updater.backend.utils
 
 import kotlinx.coroutines.*
-import updater.DragonflyUpdater.log
 import net.lingala.zip4j.ZipFile
+import updater.DragonflyUpdater.log
 import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
+import java.lang.Exception
+import java.net.*
 
 
 /**
@@ -60,4 +60,17 @@ suspend fun URL.download(
 suspend fun File.unzip(destinationDirectory: File) = withContext(Dispatchers.IO) {
     val zipFile = ZipFile(absoluteFile)
     zipFile.extractAll(destinationDirectory.absolutePath)
+}
+
+/**
+ * Checks whether a network connection to the content delivery network is possible.
+ */
+fun isInternetAvailable() = try {
+    val url = URL("https://cdn.icnet.dev")
+    val conn = url.openConnection()
+    conn.connect()
+    conn.getInputStream().close()
+    true
+} catch (e: Exception) {
+    false
 }
