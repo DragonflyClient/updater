@@ -185,7 +185,7 @@ object DragonflyUpdater {
                     if (isHeadless) delay(5_000)
 
                     log("Waiting for processes to be cancelled")
-                    ProcessManager.processesJob.cancelAndJoin()
+                    ProcessManager.processesJob.cancel()
                     log("All processes cancelled, reactivating restore point")
                     reactivateRestorePoint.run()
                     log("Restore point reactivated!")
